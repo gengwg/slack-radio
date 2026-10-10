@@ -1,0 +1,25 @@
+[project]
+name = "slack-radio"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "Weigang Geng", email = "3356786+gengwg@users.noreply.github.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "edge-tts>=7.2.8",
+    "slack-sdk>=3.45.0",
+]
+
+[project.scripts]
+slack-radio = "slack_radio:main"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
