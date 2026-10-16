@@ -12,6 +12,7 @@ RATE = 24000
 LINE_GAP = 0.35
 CHAPTER_GAP = 1.0
 CONCURRENCY = 4
+RETRIES = 3
 
 
 async def _synthesize(jobs: list[tuple[str, str, Path]]) -> None:
@@ -19,7 +20,15 @@ async def _synthesize(jobs: list[tuple[str, str, Path]]) -> None:
 
     async def one(text: str, voice: str, path: Path) -> None:
         async with sem:
-            await edge_tts.Communicate(text, voice).save(str(path))
+            # The Edge endpoint fails intermittently (e.g. NoAudioReceived); retry.
+            for attempt in range(RETRIES):
+                try:
+                    await edge_tts.Communicate(text, voice).save(str(path))
+                    return
+                except Exception:
+                    if attempt == RETRIES - 1:
+                        raise
+                    await asyncio.sleep(2**attempt)
 
     await asyncio.gather(*(one(*job) for job in jobs))
 

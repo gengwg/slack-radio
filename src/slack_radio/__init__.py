@@ -17,13 +17,19 @@ def main() -> None:
     )
     parser.add_argument("--voices", type=Path, default=Path("voices.json"))
     parser.add_argument("--base-url", default=os.environ.get("SLACK_RADIO_BASE_URL"))
+    parser.add_argument(
+        "--skip",
+        default=os.environ.get("SLACK_RADIO_SKIP", ""),
+        help="comma-separated channel names to leave out; * patterns allowed",
+    )
     parser.add_argument("--dry-run", action="store_true", help="print the script only")
     args = parser.parse_args()
     if not (args.dry_run or args.base_url):
         parser.error("set --base-url or SLACK_RADIO_BASE_URL to where --out is served")
 
     client = make_client(os.environ["SLACK_USER_TOKEN"])
-    team_id, conversations, name_of = fetch_unreads(client)
+    skip = [s.strip().lstrip("#") for s in args.skip.split(",") if s.strip()]
+    team_id, conversations, name_of = fetch_unreads(client, skip)
     chapters = build_script(conversations, name_of)
 
     names = {NARRATOR: "Narrator"}
