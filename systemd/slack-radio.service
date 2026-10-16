@@ -1,0 +1,8 @@
+[Unit]
+Description=Generate a Slack Radio episode
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/projects/slack-radio
+EnvironmentFile=%h/projects/slack-radio/.env
+ExecStart=%h/.local/bin/uv run slack-radio --out ${SLACK_RADIO_OUT}
