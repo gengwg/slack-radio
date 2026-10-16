@@ -12,6 +12,7 @@ Bot messages are skipped and nothing is marked as read.
    ```
    SLACK_USER_TOKEN=xoxp-...
    SLACK_RADIO_BASE_URL=http://<this-machine-ip>:8000
+   SLACK_RADIO_SKIP=ext-ops-*,alerts   # optional: channels to leave out, * patterns allowed
    ```
 
 3. Serve the output directory on your home Wi-Fi or Tailscale IP:

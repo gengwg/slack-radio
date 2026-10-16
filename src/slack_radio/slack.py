@@ -1,5 +1,6 @@
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
+from fnmatch import fnmatch
 from functools import cache
 
 from slack_sdk import WebClient
@@ -33,7 +34,7 @@ def make_client(token: str) -> WebClient:
 
 
 def fetch_unreads(
-    client: WebClient,
+    client: WebClient, skip: Sequence[str] = ()
 ) -> tuple[str, list[Conversation], Callable[[str], str]]:
     """Return (team_id, conversations with unread messages DMs first, user name lookup)."""
     me = client.auth_test()
@@ -63,6 +64,8 @@ def fetch_unreads(
     ):
         for c in page["channels"]:
             info = client.conversations_info(channel=c["id"])["channel"]
+            if any(fnmatch(info.get("name", ""), pattern) for pattern in skip):
+                continue
             last_read = info.get("last_read")
             if not last_read:
                 continue

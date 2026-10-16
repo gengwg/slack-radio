@@ -5,6 +5,7 @@ CHANNELS = {
     "C1": {"id": "C1", "name": "general", "last_read": "100"},
     "D1": {"id": "D1", "is_im": True, "user": "U2", "last_read": "100"},
     "C2": {"id": "C2", "name": "quiet", "last_read": "100"},
+    "C3": {"id": "C3", "name": "ext-ops-prod", "last_read": "100"},
     "D2": {"id": "D2", "is_im": True, "user": "U1", "last_read": "0000000000.000000"},
 }
 HISTORY = {
@@ -15,6 +16,7 @@ HISTORY = {
     ],
     "D1": [{"ts": "105", "user": "U2", "text": "hi", "files": [{"title": "a.pdf"}]}],
     "C2": [],
+    "C3": [{"ts": "107", "user": "U1", "text": "server report"}],
     "D2": [{"ts": "90", "user": "U1", "text": "first ever"}],
 }
 REPLIES = {
@@ -54,7 +56,7 @@ class FakeSlack:
 
 
 def test_fetch_unreads():
-    team, convs, name_of = fetch_unreads(FakeSlack())
+    team, convs, name_of = fetch_unreads(FakeSlack(), skip=["ext-*"])
     assert team == "T1"
     assert [(c.kind, c.name) for c in convs] == [
         ("im", "Bob"),
@@ -75,3 +77,8 @@ def test_fetch_unreads():
         ("Bob", "answer")
     ]
     assert name_of("U1") == "Alice"
+
+
+def test_fetch_unreads_without_skip_includes_all_channels():
+    _, convs, _ = fetch_unreads(FakeSlack())
+    assert "ext-ops-prod" in [c.name for c in convs]
