@@ -1,0 +1,10 @@
+[Unit]
+Description=Generate Slack Radio episodes before commutes
+
+[Timer]
+OnCalendar=Mon..Fri 07:00
+OnCalendar=Mon..Fri 17:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
